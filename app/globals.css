@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm editorial palette — paper, ink, terracotta */
+    --background: 36 33% 97%;
+    --foreground: 20 17% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 17% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 17% 11%;
+    --primary: 17 70% 51%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 33 30% 93%;
+    --secondary-foreground: 20 17% 11%;
+    --muted: 33 25% 93%;
+    --muted-foreground: 25 10% 48%;
+    --accent: 33 30% 93%;
+    --accent-foreground: 20 17% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 22% 88%;
+    --input: 32 22% 86%;
+    --ring: 17 70% 51%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    background: hsl(17 70% 51% / 0.18);
+  }
+}
+
+@layer utilities {
+  .card-soft {
+    @apply rounded-2xl border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(32_24_16/0.12)];
+  }
+  .press {
+    @apply transition-all duration-200 active:scale-[0.98];
+  }
+  .skeleton {
+    @apply animate-pulse rounded-xl bg-muted;
+  }
+}
+
+/* Thin scrollbars for builder panes */
+.scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
