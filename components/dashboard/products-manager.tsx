@@ -60,7 +60,7 @@ function SortableCard({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`card-soft group overflow-hidden ${isDragging ? "z-10 opacity-80 shadow-2xl" : ""}`}
+      className={`card-soft card-hover group overflow-hidden ${isDragging ? "z-10 opacity-80 shadow-2xl" : ""}`}
     >
       <div className="relative aspect-square bg-muted">
         {product.image_urls[0] ? (

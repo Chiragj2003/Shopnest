@@ -53,13 +53,13 @@ export function AnalyticsView({
 
       {/* stat cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="card-soft p-4">
+        <div className="card-soft card-hover p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Eye className="h-4 w-4" /> <span className="text-xs font-medium">Page views</span>
           </div>
           <p className="mt-1 font-display text-3xl font-bold">{totals.views}</p>
         </div>
-        <div className="card-soft p-4">
+        <div className="card-soft card-hover p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <MessageCircle className="h-4 w-4" /> <span className="text-xs font-medium">WhatsApp clicks</span>
           </div>

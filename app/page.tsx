@@ -33,7 +33,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-dvh bg-background">
       {/* nav */}
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
+      <header className="sticky top-0 z-40 border-b border-transparent bg-background/70 backdrop-blur-md [&:has(+section)]:border-border/60">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
         <p className="font-display text-xl font-bold">
           shop<span className="text-primary">nest</span>
         </p>
@@ -53,10 +54,13 @@ export default function LandingPage() {
             <UserButton />
           </Show>
         </nav>
+        </div>
       </header>
 
       {/* hero */}
-      <section className="mx-auto grid max-w-5xl items-center gap-10 px-5 pb-20 pt-10 md:grid-cols-2 md:pt-16">
+      <section className="relative mx-auto grid max-w-5xl items-center gap-10 overflow-x-clip px-5 pb-20 pt-10 md:grid-cols-2 md:pt-16">
+        <div className="blob -left-24 top-10 h-72 w-72 bg-primary/15" />
+        <div className="blob -right-20 bottom-0 h-80 w-80 bg-amber-400/15" />
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
             <Smartphone className="h-3.5 w-3.5" /> Built for Instagram sellers in India
@@ -64,7 +68,7 @@ export default function LandingPage() {
           <h1 className="mt-5 text-4xl font-bold leading-[1.1] sm:text-5xl">
             Your Instagram shop,
             <br />
-            now a <span className="text-primary">real storefront</span>
+            now a <span className="text-gradient">real storefront</span>
           </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
             One link with all your products. Buyers browse, add to cart, and order on
@@ -92,8 +96,8 @@ export default function LandingPage() {
         </div>
 
         {/* phone mockup */}
-        <div className="mx-auto w-full max-w-[300px] animate-fade-up">
-          <div className="overflow-hidden rounded-[2.6rem] border-[10px] border-foreground/90 shadow-2xl">
+        <div className="relative mx-auto w-full max-w-[300px] animate-fade-up">
+          <div className="float-slow overflow-hidden rounded-[2.6rem] border-[10px] border-foreground/90 shadow-[0_30px_60px_-20px_rgb(32_24_16/0.35)]">
             <div className="bg-[#FAF6F0] pb-5">
               <div className="px-4 pb-4 pt-8 text-center">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl">
@@ -136,7 +140,7 @@ export default function LandingPage() {
       <section className="border-t bg-card/40">
         <div className="mx-auto grid max-w-5xl gap-6 px-5 py-16 md:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="card-soft p-6">
+            <div key={title} className="card-soft card-hover p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon className="h-5 w-5" />
               </div>

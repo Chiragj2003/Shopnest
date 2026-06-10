@@ -31,9 +31,19 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "cv11";
+    /* faint warm wash at the top of every page */
+    background-image: radial-gradient(
+      900px 420px at 50% -120px,
+      hsl(17 70% 51% / 0.07),
+      transparent 70%
+    );
   }
 
   h1, h2, h3, h4 {
@@ -43,11 +53,31 @@
   ::selection {
     background: hsl(17 70% 51% / 0.18);
   }
+
+  /* consistent, visible keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.7);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
 
 @layer utilities {
   .card-soft {
-    @apply rounded-2xl border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(32_24_16/0.12)];
+    @apply rounded-2xl border bg-card;
+    border-color: hsl(32 22% 90%);
+    box-shadow:
+      0 1px 2px rgb(32 24 16 / 0.04),
+      0 8px 24px -12px rgb(32 24 16 / 0.12);
+  }
+  .card-hover {
+    @apply transition-all duration-200;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 2px 4px rgb(32 24 16 / 0.05),
+      0 18px 40px -16px rgb(32 24 16 / 0.18);
   }
   .press {
     @apply transition-all duration-200 active:scale-[0.98];
@@ -55,8 +85,31 @@
   .skeleton {
     @apply animate-pulse rounded-xl bg-muted;
   }
+  .text-gradient {
+    background: linear-gradient(100deg, hsl(17 70% 51%), hsl(35 85% 52%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* soft decorative blob for hero backgrounds */
+  .blob {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
 }
 
 /* Thin scrollbars for builder panes */
 .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
+
+/* gentle float for the landing phone mockup */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0) rotate(1.5deg); }
+  50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+.float-slow {
+  animation: float-y 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-slow { animation: none; }
+  html { scroll-behavior: auto; }
+}
