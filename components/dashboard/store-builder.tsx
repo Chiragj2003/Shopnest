@@ -19,12 +19,19 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  ArrowDown,
+  ArrowUp,
   ChevronDown,
+  Copy,
+  Eye,
   GripVertical,
   ImagePlus,
+  Layers,
   Loader2,
+  Paintbrush,
   Plus,
   Save,
+  Sparkles,
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,6 +52,7 @@ import type {
 } from "@/lib/types";
 
 type LocalSection = { localId: string; type: SectionType; content: SectionContent };
+type BuilderTab = "edit" | "preview" | "style";
 
 const SECTION_LIBRARY: Array<{ type: SectionType; label: string; emoji: string }> = [
   { type: "hero", label: "Hero", emoji: "👋" },
@@ -65,6 +73,39 @@ const DEFAULT_CONTENT: Record<SectionType, SectionContent> = {
   faq: { title: "FAQ", items: [] },
   socials: { items: [] },
 };
+
+const newId = () => crypto.randomUUID();
+
+const STARTER: LocalSection[] = [
+  { localId: "", type: "hero", content: {} },
+  { localId: "", type: "products", content: { title: "Shop" } },
+  {
+    localId: "",
+    type: "text",
+    content: { title: "About us", body: "Tell buyers your story — what you make, since when, and why they'll love it." },
+  },
+  {
+    localId: "",
+    type: "faq",
+    content: {
+      title: "FAQ",
+      items: [
+        { q: "Do you deliver?", a: "Yes — message us on WhatsApp for delivery details." },
+        { q: "How do I pay?", a: "UPI on delivery, or scan the QR on this page." },
+      ],
+    },
+  },
+];
+
+function sectionSummary(s: LocalSection): string {
+  const c = s.content;
+  if (c.title) return c.title;
+  if (c.body) return c.body.slice(0, 36);
+  if (c.caption) return c.caption.slice(0, 36);
+  if (c.items?.length) return `${c.items.length} item${c.items.length === 1 ? "" : "s"}`;
+  if (c.imageUrl) return "1 image";
+  return "Tap to edit";
+}
 
 function ImageField({
   value,
@@ -237,16 +278,24 @@ function SectionEditor({
 
 function SortableSection({
   section,
+  index,
+  count,
   expanded,
   onToggle,
   onChange,
   onDelete,
+  onDuplicate,
+  onMove,
 }: {
   section: LocalSection;
+  index: number;
+  count: number;
   expanded: boolean;
   onToggle: () => void;
   onChange: (content: SectionContent) => void;
   onDelete: () => void;
+  onDuplicate: () => void;
+  onMove: (dir: -1 | 1) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: section.localId });
@@ -256,22 +305,66 @@ function SortableSection({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`card-soft ${isDragging ? "z-10 opacity-80" : ""}`}
+      className={`card-soft overflow-hidden ${isDragging ? "z-10 opacity-80 shadow-2xl" : ""} ${
+        expanded ? "ring-2 ring-primary/30" : ""
+      }`}
     >
-      <div className="flex items-center gap-2 p-2.5">
-        <button {...attributes} {...listeners} aria-label="Drag" className="cursor-grab rounded-md p-1 text-muted-foreground hover:bg-secondary active:cursor-grabbing">
+      <div className="flex items-center gap-1.5 p-2.5">
+        <button
+          {...attributes}
+          {...listeners}
+          aria-label="Drag"
+          className="hidden cursor-grab rounded-md p-1 text-muted-foreground hover:bg-secondary active:cursor-grabbing sm:block"
+        >
           <GripVertical className="h-4 w-4" />
         </button>
-        <button onClick={onToggle} className="flex flex-1 items-center gap-2 text-left text-sm font-semibold">
-          <span>{meta.emoji}</span> {meta.label}
-          <ChevronDown className={`ml-auto h-4 w-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`} />
+        <button onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-base">
+            {meta.emoji}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold leading-tight">{meta.label}</span>
+            <span className="block truncate text-xs text-muted-foreground">{sectionSummary(section)}</span>
+          </span>
+          <ChevronDown
+            className={`ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
         </button>
-        <button onClick={onDelete} aria-label="Delete section" className="press rounded-md p-1 text-destructive hover:bg-destructive/10">
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex shrink-0 items-center">
+          <button
+            onClick={() => onMove(-1)}
+            disabled={index === 0}
+            aria-label="Move up"
+            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary disabled:opacity-25"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => onMove(1)}
+            disabled={index === count - 1}
+            aria-label="Move down"
+            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary disabled:opacity-25"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onDuplicate}
+            aria-label="Duplicate section"
+            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onDelete}
+            aria-label="Delete section"
+            className="press rounded-md p-1 text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
       {expanded && (
-        <div className="border-t p-3">
+        <div className="border-t bg-secondary/30 p-3">
           <SectionEditor section={section} onChange={onChange} />
         </div>
       )}
@@ -295,6 +388,7 @@ export function StoreBuilder({
   const [expanded, setExpanded] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [tab, setTab] = useState<BuilderTab>("edit");
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -314,9 +408,39 @@ export function StoreBuilder({
   const touch = () => setDirty(true);
 
   const addSection = (type: SectionType) => {
-    const localId = crypto.randomUUID();
+    const localId = newId();
     setSections((prev) => [...prev, { localId, type, content: { ...DEFAULT_CONTENT[type] } }]);
     setExpanded(localId);
+    setTab("edit");
+    touch();
+  };
+
+  const addStarter = () => {
+    setSections(STARTER.map((s) => ({ ...s, localId: newId(), content: { ...s.content } })));
+    toast.success("Starter layout added — customize away!");
+    touch();
+  };
+
+  const moveSection = (localId: string, dir: -1 | 1) => {
+    setSections((prev) => {
+      const i = prev.findIndex((s) => s.localId === localId);
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      return arrayMove(prev, i, j);
+    });
+    touch();
+  };
+
+  const duplicateSection = (localId: string) => {
+    setSections((prev) => {
+      const i = prev.findIndex((s) => s.localId === localId);
+      const copy: LocalSection = {
+        localId: newId(),
+        type: prev[i].type,
+        content: JSON.parse(JSON.stringify(prev[i].content)),
+      };
+      return [...prev.slice(0, i + 1), copy, ...prev.slice(i + 1)];
+    });
     touch();
   };
 
@@ -344,71 +468,106 @@ export function StoreBuilder({
     }
   };
 
+  const TABS: Array<{ id: BuilderTab; label: string; icon: typeof Layers }> = [
+    { id: "edit", label: "Sections", icon: Layers },
+    { id: "preview", label: "Preview", icon: Eye },
+    { id: "style", label: "Style", icon: Paintbrush },
+  ];
+
   return (
     <div className="animate-fade-up">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Store Builder</h1>
-          <p className="text-sm text-muted-foreground">Drag sections, tune the look — the preview is live.</p>
+          <p className="hidden text-sm text-muted-foreground sm:block">
+            Drag sections, tune the look — the preview is live.
+          </p>
         </div>
-        <Button onClick={save} disabled={saving || !dirty}>
+        <Button onClick={save} disabled={saving || !dirty} className="hidden lg:inline-flex">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {dirty ? "Publish changes" : "Published"}
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[290px_minmax(0,1fr)_270px]">
+      {/* mobile tab switcher */}
+      <div className="sticky top-14 z-30 -mx-4 mb-4 flex gap-1 border-b bg-background/90 px-4 pb-2 backdrop-blur lg:hidden">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`press flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+              tab === id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
+            }`}
+          >
+            <Icon className="h-4 w-4" /> {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)_280px]">
         {/* left: sections */}
-        <div className="space-y-4">
+        <div className={`${tab === "edit" ? "block" : "hidden"} space-y-4 lg:block`}>
           <div className="card-soft p-3">
             <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Add section</p>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-2">
               {SECTION_LIBRARY.map((s) => (
                 <button
                   key={s.type}
                   onClick={() => addSection(s.type)}
-                  className="press flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-medium hover:border-primary hover:text-primary"
+                  className="press flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-[11px] font-medium hover:border-primary hover:bg-primary/5 hover:text-primary lg:flex-row lg:gap-1.5 lg:py-1.5 lg:text-xs"
                 >
-                  <span>{s.emoji}</span> {s.label}
+                  <span className="text-base lg:text-sm">{s.emoji}</span> {s.label}
                 </button>
               ))}
             </div>
           </div>
 
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <SortableContext items={sections.map((s) => s.localId)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-2">
-                {sections.length === 0 && (
-                  <p className="rounded-xl border border-dashed p-4 text-center text-xs text-muted-foreground">
-                    No sections yet — your store shows a default hero + products. Add sections to customize.
-                  </p>
-                )}
-                {sections.map((s) => (
-                  <SortableSection
-                    key={s.localId}
-                    section={s}
-                    expanded={expanded === s.localId}
-                    onToggle={() => setExpanded(expanded === s.localId ? null : s.localId)}
-                    onChange={(content) => {
-                      setSections((prev) => prev.map((x) => (x.localId === s.localId ? { ...x, content } : x)));
-                      touch();
-                    }}
-                    onDelete={() => {
-                      setSections((prev) => prev.filter((x) => x.localId !== s.localId));
-                      touch();
-                    }}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+          {sections.length === 0 ? (
+            <div className="card-soft flex flex-col items-center gap-3 p-6 text-center">
+              <p className="text-4xl">🎨</p>
+              <p className="text-sm font-semibold">Start with a ready-made layout</p>
+              <p className="text-xs text-muted-foreground">
+                Hero, products, about & FAQ — pre-arranged. You just fill in your words.
+              </p>
+              <Button size="sm" onClick={addStarter}>
+                <Sparkles className="mr-1.5 h-4 w-4" /> Use starter layout
+              </Button>
+            </div>
+          ) : (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+              <SortableContext items={sections.map((s) => s.localId)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2">
+                  {sections.map((s, i) => (
+                    <SortableSection
+                      key={s.localId}
+                      section={s}
+                      index={i}
+                      count={sections.length}
+                      expanded={expanded === s.localId}
+                      onToggle={() => setExpanded(expanded === s.localId ? null : s.localId)}
+                      onChange={(content) => {
+                        setSections((prev) => prev.map((x) => (x.localId === s.localId ? { ...x, content } : x)));
+                        touch();
+                      }}
+                      onDelete={() => {
+                        setSections((prev) => prev.filter((x) => x.localId !== s.localId));
+                        touch();
+                      }}
+                      onDuplicate={() => duplicateSection(s.localId)}
+                      onMove={(dir) => moveSection(s.localId, dir)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
         </div>
 
         {/* center: live phone preview */}
-        <div className="order-first lg:order-none">
-          <div className="mx-auto w-[375px] max-w-full">
+        <div className={`${tab === "preview" ? "block" : "hidden"} lg:block`}>
+          <div className="mx-auto w-[375px] max-w-full lg:sticky lg:top-6">
             <div className="overflow-hidden rounded-[2.4rem] border-[10px] border-foreground/90 shadow-2xl">
-              <div className="h-[640px] overflow-y-auto scroll-thin relative">
+              <div className="relative h-[600px] overflow-y-auto scroll-thin sm:h-[640px]">
                 <StorefrontView
                   seller={previewSeller}
                   sections={previewSections}
@@ -417,29 +576,32 @@ export function StoreBuilder({
                 />
               </div>
             </div>
-            <p className="mt-2 text-center text-xs text-muted-foreground">Live preview · 375px</p>
+            <p className="mt-2 text-center text-xs text-muted-foreground">Live preview · how buyers see it</p>
           </div>
         </div>
 
         {/* right: style controls */}
-        <div className="space-y-4">
-          <div className="card-soft space-y-3 p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Theme preset</p>
-            <div className="grid grid-cols-5 gap-1.5">
-              {THEME_PRESETS.map((t) => (
-                <button
-                  key={t.preset}
-                  title={t.preset}
-                  onClick={() => {
-                    setTheme(t);
-                    touch();
-                  }}
-                  className={`press aspect-square rounded-lg border-2 ${
-                    theme.preset === t.preset ? "border-primary" : "border-transparent"
-                  }`}
-                  style={{ background: t.background === "gradient" ? t.bgGradient : t.bg }}
-                />
-              ))}
+        <div className={`${tab === "style" ? "block" : "hidden"} space-y-4 lg:block`}>
+          <div className="card-soft space-y-4 p-4">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Theme preset</p>
+              <div className="grid grid-cols-5 gap-1.5">
+                {THEME_PRESETS.map((t) => (
+                  <button
+                    key={t.preset}
+                    title={t.preset}
+                    onClick={() => {
+                      setTheme(t);
+                      touch();
+                    }}
+                    className={`press aspect-square rounded-lg border-2 ${
+                      theme.preset === t.preset ? "border-primary ring-2 ring-primary/20" : "border-transparent"
+                    }`}
+                    style={{ background: t.background === "gradient" ? t.bgGradient : t.bg }}
+                  />
+                ))}
+              </div>
+              <p className="mt-1.5 text-xs text-muted-foreground">{theme.preset}</p>
             </div>
 
             <div className="space-y-1.5">
@@ -452,7 +614,7 @@ export function StoreBuilder({
                     setTheme({ ...theme, preset: "Custom", accent: e.target.value });
                     touch();
                   }}
-                  className="h-8 w-12 cursor-pointer rounded border"
+                  className="h-9 w-14 cursor-pointer rounded-lg border"
                 />
                 <span className="text-xs text-muted-foreground">{theme.accent}</span>
               </div>
@@ -468,8 +630,8 @@ export function StoreBuilder({
                       setTheme({ ...theme, background: bg });
                       touch();
                     }}
-                    className={`press flex-1 rounded-lg border px-2 py-1.5 text-xs font-medium capitalize ${
-                      theme.background === bg ? "border-primary text-primary" : ""
+                    className={`press flex-1 rounded-lg border px-2 py-2 text-xs font-medium capitalize ${
+                      theme.background === bg ? "border-primary bg-primary/5 text-primary" : ""
                     }`}
                   >
                     {bg}
@@ -484,7 +646,7 @@ export function StoreBuilder({
                     setTheme({ ...theme, preset: "Custom", bg: e.target.value });
                     touch();
                   }}
-                  className="h-8 w-full cursor-pointer rounded border"
+                  className="h-9 w-full cursor-pointer rounded-lg border"
                 />
               )}
             </div>
@@ -497,7 +659,7 @@ export function StoreBuilder({
                   setTheme({ ...theme, fontPair: e.target.value });
                   touch();
                 }}
-                className="w-full rounded-lg border bg-background px-2 py-1.5 text-xs"
+                className="w-full rounded-lg border bg-background px-2 py-2 text-xs"
               >
                 {FONT_PAIRS.map((f) => (
                   <option key={f.id} value={f.id}>
@@ -517,8 +679,8 @@ export function StoreBuilder({
                       setTheme({ ...theme, buttonShape: shape });
                       touch();
                     }}
-                    className={`press flex-1 border px-2 py-1.5 text-xs font-medium capitalize ${
-                      theme.buttonShape === shape ? "border-primary text-primary" : ""
+                    className={`press flex-1 border px-2 py-2 text-xs font-medium capitalize ${
+                      theme.buttonShape === shape ? "border-primary bg-primary/5 text-primary" : ""
                     }`}
                     style={{ borderRadius: buttonRadius(shape) }}
                   >
@@ -530,6 +692,16 @@ export function StoreBuilder({
           </div>
         </div>
       </div>
+
+      {/* floating publish button (mobile) */}
+      {dirty && (
+        <div className="fixed bottom-4 left-0 right-0 z-40 flex justify-center px-4 lg:hidden">
+          <Button onClick={save} disabled={saving} className="w-full max-w-sm shadow-2xl">
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            Publish changes
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
