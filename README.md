@@ -14,7 +14,7 @@ Shopnest is a storefront builder for Instagram sellers in India. Sellers get a b
 - 📄 **Catalog PDF** — one-click multi-page product catalog with a store QR code
 - 📱 **Share kit** — auto-generated 1080×1920 Instagram story card with your store QR
 - 📊 **Analytics** — daily page views, WhatsApp clicks per product, top products
-- 💎 **Free plan** — 10 products free; Premium unlocks unlimited
+- 💎 **Free plan** — 10 products free; Pro unlocks unlimited + your own website
 
 ### For buyers
 - 🛒 **Cart-lite** — tap to add products; sticky bar shows count + total
@@ -22,6 +22,24 @@ Shopnest is a storefront builder for Instagram sellers in India. Sellers get a b
 - 📲 **UPI payments** — scannable UPI QR with the cart amount pre-filled
 - 🌐 **Hindi / English** toggle for all storefront labels
 - ⚡ Fast, SEO-friendly, designed mobile-first (perfect at 360px)
+
+## 💎 Plans — Free vs Pro
+
+| | Free | Pro · ₹199/mo or ₹999/yr |
+|---|---|---|
+| Products | 10 | Unlimited |
+| Storefront at `shopnest.store/name` | ✅ | ✅ |
+| WhatsApp cart + UPI QR + Hindi/English | ✅ | ✅ |
+| **Custom website (Home + Shop pages)** | — | ✅ |
+| **Own subdomain `name.shopnest.store`** | — | ✅ |
+| Custom domain (`www.yourbrand.in`) | — | ✅ add-on |
+| Desktop + mobile builder layouts | mobile | both |
+| Remove "Powered by Shopnest" badge | — | ✅ |
+| Analytics history | 30 days | 90 days + export |
+| Instagram imports | 3/month | Unlimited |
+| Catalog PDF & story card | with Shopnest QR | white-label |
+
+Full tier details, market research, and the feature roadmap live in [`docs/FEATURES.md`](docs/FEATURES.md). The pitch deck is at [`docs/PITCH.md`](docs/PITCH.md).
 
 ## 🧱 Tech Stack
 
