@@ -20,6 +20,8 @@ const en = {
     yourCart: "Your Cart",
     emptyCart: "Your cart is empty — tap a product to add it.",
   remove: "Remove",
+  noProducts: "No products yet — check back soon!",
+  poweredBy: "Powered by",
 };
 
 export type Labels = { [K in keyof typeof en]: string };
@@ -46,5 +48,7 @@ export const LABELS: Record<Lang, Labels> = {
     yourCart: "आपका कार्ट",
     emptyCart: "कार्ट खाली है — जोड़ने के लिए प्रोडक्ट पर टैप करें।",
     remove: "हटाएं",
+    noProducts: "अभी कोई प्रोडक्ट नहीं — जल्द देखें!",
+    poweredBy: "द्वारा निर्मित",
   },
 };

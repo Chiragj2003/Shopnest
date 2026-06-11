@@ -67,8 +67,17 @@ export function SectionRenderer({
       return (
         <section className="px-5 py-6">
           {c.imageUrl && (
-            <div className="relative aspect-[4/3] w-full overflow-hidden" style={{ borderRadius: "calc(var(--sf-radius) + 8px)" }}>
-              <Image src={c.imageUrl} alt={c.caption ?? ""} fill sizes="(max-width: 480px) 100vw, 420px" className="object-cover" />
+            <div className="overflow-hidden" style={{ borderRadius: "calc(var(--sf-radius) + 8px)" }}>
+              {/* natural aspect ratio — no forced crop */}
+              <Image
+                src={c.imageUrl}
+                alt={c.caption ?? ""}
+                width={1200}
+                height={900}
+                sizes="(max-width: 480px) 100vw, 420px"
+                className="h-auto w-full"
+                style={{ height: "auto" }}
+              />
             </div>
           )}
           {c.caption && (
@@ -89,7 +98,7 @@ export function SectionRenderer({
           )}
           {products.length === 0 ? (
             <p className="py-8 text-center text-sm" style={{ color: "var(--sf-muted)" }}>
-              No products yet — check back soon!
+              {labels.noProducts}
             </p>
           ) : (
             <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
