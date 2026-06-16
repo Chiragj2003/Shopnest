@@ -3,30 +3,39 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import {
   ArrowRight,
   IndianRupee,
-  MessageCircle,
   Palette,
-  QrCode,
+  Share2,
   ShoppingBag,
   Smartphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WhatsAppGlyph } from "@/components/ui/whatsapp";
 
 const FEATURES = [
   {
-    icon: MessageCircle,
+    icon: WhatsAppGlyph,
+    tint: "whatsapp" as const,
     title: "Orders land on WhatsApp",
     body: "No payment gateway setup, no commissions. Buyers tap a product and the order arrives as a WhatsApp message — exactly how your customers already shop.",
   },
   {
     icon: Palette,
+    tint: "primary" as const,
     title: "A store that looks like you",
     body: "Pick a theme, drag sections, tune fonts and colors in a live phone preview. Every preset is designed to look beautiful on a 360px screen.",
   },
   {
-    icon: QrCode,
-    title: "Get paid with UPI",
-    body: "Your storefront shows a scannable UPI QR with the cart total filled in. Plus a one-tap PDF catalog and Instagram story card to share.",
+    icon: Share2,
+    tint: "primary" as const,
+    title: "Share-ready everywhere",
+    body: "One tap turns your catalog into a PDF or an Instagram story card — so your whole shop travels with a single link.",
   },
+];
+
+const STEPS = [
+  { icon: ShoppingBag, title: "Add your products", body: "Upload photos, or import a post straight from Instagram." },
+  { icon: Share2, title: "Share your one link", body: "Drop it in your bio. One link holds your whole catalog." },
+  { icon: WhatsAppGlyph, title: "Orders on WhatsApp", body: "Buyers tap to order — you get a ready-to-reply message." },
 ];
 
 export default function LandingPage() {
@@ -72,7 +81,7 @@ export default function LandingPage() {
           </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
             One link with all your products. Buyers browse, add to cart, and order on
-            WhatsApp — you get paid via UPI. Live in five minutes, free for your first 10 products.
+            WhatsApp — payment sorted right there in the chat. Live in five minutes, free for your first 10 products.
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Show when="signed-out">
@@ -119,8 +128,8 @@ export default function LandingPage() {
                     </div>
                     <p className="mt-1.5 truncate text-[11px] font-semibold text-[#221C18]">{p.name}</p>
                     <p className="text-[11px] font-bold text-[#D95B2A]">₹{p.price}</p>
-                    <div className="mt-1.5 rounded-full bg-[#D95B2A] py-1.5 text-center text-[9px] font-bold text-white">
-                      Order on WhatsApp
+                    <div className="mt-1.5 flex items-center justify-center gap-1 rounded-full bg-[#25D366] py-1.5 text-center text-[9px] font-bold text-white">
+                      <WhatsAppGlyph className="h-2.5 w-2.5" /> Order
                     </div>
                   </div>
                 ))}
@@ -136,18 +145,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* features */}
-      <section className="border-t bg-card/40">
-        <div className="mx-auto grid max-w-5xl gap-6 px-5 py-16 md:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="card-soft card-hover p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="h-5 w-5" />
+      {/* how it works */}
+      <section className="mx-auto max-w-5xl px-5 pb-4">
+        <div className="grid gap-3 sm:grid-cols-3">
+          {STEPS.map(({ icon: Icon, title, body }, i) => (
+            <div key={title} className="flex items-start gap-3 rounded-2xl border bg-card/60 p-4">
+              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Icon className="h-4 w-4" />
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
+                  {i + 1}
+                </span>
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold leading-tight">{title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{body}</p>
               </div>
-              <h3 className="mt-4 text-lg font-bold">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* features */}
+      <section className="mt-12 border-t bg-card/40">
+        <div className="mx-auto max-w-5xl px-5 py-16">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">
+              Why Shopnest
+            </span>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
+              Everything you need to sell online
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+              Skip the dashboards and spreadsheets — just the few tools that actually move
+              product for small sellers in India.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, tint, title, body }) => (
+              <div key={title} className="card-soft card-hover p-6">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                    tint === "whatsapp" ? "bg-whatsapp/10 text-whatsapp" : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-lg font-bold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

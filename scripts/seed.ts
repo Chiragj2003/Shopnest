@@ -33,7 +33,6 @@ async function main() {
     store_name: "Demo Bakery",
     bio: "Fresh bakes, delivered in Indiranagar 🧁",
     whatsapp_number: "919876543210",
-    upi_id: "demobakery@okhdfcbank",
     wa_template: "Hi! I want to order {product} (₹{price}) from {store}",
     theme: {
       preset: "Editorial Cream",
@@ -95,7 +94,7 @@ async function main() {
         title: "FAQ",
         items: [
           { q: "Do you deliver?", a: "Yes! Free delivery within 5km of Indiranagar, ₹40 beyond." },
-          { q: "How do I pay?", a: "UPI on delivery, or scan the QR on this page after ordering." },
+          { q: "How do I pay?", a: "Pay on delivery, or settle up with us over WhatsApp." },
           { q: "Custom cakes?", a: "Absolutely — message us on WhatsApp with your idea 3 days ahead." },
         ],
       },

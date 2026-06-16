@@ -47,6 +47,11 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        whatsapp: {
+          DEFAULT: "#25D366",
+          dark: "#1EBE5B",
+          foreground: "#FFFFFF",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

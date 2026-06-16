@@ -1,6 +1,10 @@
 export const DEFAULT_WA_TEMPLATE =
   "Hi! I want to order {product} (₹{price}) from {store}";
 
+/** WhatsApp brand green — used for every "order / checkout on WhatsApp" action. */
+export const WHATSAPP_GREEN = "#25D366";
+export const WHATSAPP_GREEN_DEEP = "#1EBE5B";
+
 export function fillTemplate(
   template: string,
   vars: { product?: string; price?: string | number; store?: string }

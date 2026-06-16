@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Languages, Minus, Plus, QrCode, ShoppingBag, Trash2, X } from "lucide-react";
+import { Languages, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import type { Product, Seller, StoreSection } from "@/lib/types";
 import { DEFAULT_THEME, buttonRadius, getFontPair } from "@/lib/themes";
 import { LABELS, type Lang } from "@/lib/i18n";
 import { useCart } from "@/zustand/store";
-import { cartMessage, formatINR, waLink } from "@/lib/whatsapp";
+import { cartMessage, formatINR, waLink, WHATSAPP_GREEN } from "@/lib/whatsapp";
+import { WhatsAppGlyph } from "@/components/ui/whatsapp";
 import { logPageView, logWaClick } from "@/lib/actions/orders";
 import { SectionRenderer } from "@/components/storefront/sections";
-import { UpiModal } from "@/components/storefront/upi-modal";
 
 export function StorefrontView({
   seller,
@@ -26,7 +26,6 @@ export function StorefrontView({
   const font = getFontPair(theme.fontPair);
   const [lang, setLang] = useState<Lang>("en");
   const [cartOpen, setCartOpen] = useState(false);
-  const [upiOpen, setUpiOpen] = useState(false);
   const labels = LABELS[lang];
   const cart = useCart();
 
@@ -118,19 +117,6 @@ export function StorefrontView({
         className={`${preview ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-40`}
       >
         <div className="mx-auto flex max-w-md items-center gap-2 px-3 pb-3">
-          {seller.upi_id && (
-            <button
-              onClick={() => setUpiOpen(true)}
-              className="press inline-flex items-center gap-1.5 border px-4 py-3 text-xs font-bold shadow-xl backdrop-blur"
-              style={{
-                borderRadius: "var(--sf-radius)",
-                background: "color-mix(in srgb, var(--sf-card) 92%, transparent)",
-                borderColor: "color-mix(in srgb, var(--sf-text) 12%, transparent)",
-              }}
-            >
-              <QrCode className="h-4 w-4" /> {labels.payUpi}
-            </button>
-          )}
           <button
             onClick={() => (count > 0 ? setCartOpen(true) : undefined)}
             className="press flex flex-1 items-center justify-between gap-2 px-4 py-3 text-sm font-bold shadow-xl"
@@ -220,23 +206,18 @@ export function StorefrontView({
                 </div>
                 <button
                   onClick={checkout}
-                  className="press mt-3 w-full px-4 py-3.5 text-sm font-bold"
+                  className="press mt-3 flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-white shadow-sm"
                   style={{
                     borderRadius: "var(--sf-radius)",
-                    background: "var(--sf-accent)",
-                    color: "var(--sf-accent-text)",
+                    background: WHATSAPP_GREEN,
                   }}
                 >
-                  {labels.checkout} →
+                  <WhatsAppGlyph className="h-4 w-4" /> {labels.checkout}
                 </button>
               </>
             )}
           </div>
         </div>
-      )}
-
-      {upiOpen && seller.upi_id && (
-        <UpiModal seller={seller} amount={total > 0 ? total : undefined} labels={labels} onClose={() => setUpiOpen(false)} />
       )}
     </div>
   );

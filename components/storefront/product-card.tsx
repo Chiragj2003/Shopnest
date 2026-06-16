@@ -5,7 +5,8 @@ import { ShoppingBag, Check, BellRing } from "lucide-react";
 import type { Product, Seller } from "@/lib/types";
 import type { Labels } from "@/lib/i18n";
 import { useCart } from "@/zustand/store";
-import { fillTemplate, formatINR, notifyMeMessage, waLink } from "@/lib/whatsapp";
+import { fillTemplate, formatINR, notifyMeMessage, waLink, WHATSAPP_GREEN } from "@/lib/whatsapp";
+import { WhatsAppGlyph } from "@/components/ui/whatsapp";
 import { logWaClick } from "@/lib/actions/orders";
 
 export function ProductCard({
@@ -68,9 +69,17 @@ export function ProductCard({
         ) : (
           <div
             className="flex aspect-square w-full items-center justify-center"
-            style={{ background: "color-mix(in srgb, var(--sf-text) 6%, var(--sf-card))" }}
+            style={{ background: "color-mix(in srgb, var(--sf-accent) 6%, var(--sf-card))" }}
           >
-            <ShoppingBag className="h-10 w-10 opacity-20" />
+            <span
+              className="flex h-14 w-14 items-center justify-center rounded-2xl"
+              style={{
+                background: "color-mix(in srgb, var(--sf-accent) 12%, transparent)",
+                color: "var(--sf-accent)",
+              }}
+            >
+              <ShoppingBag className="h-6 w-6" />
+            </span>
           </div>
         )}
         {images.length > 1 && (
@@ -115,7 +124,8 @@ export function ProductCard({
           <div className="flex gap-2">
             <button
               onClick={() => (inCart ? cart.remove(product.id) : cart.add(product))}
-              className="press flex-1 border px-3 py-2.5 text-xs font-semibold transition-colors"
+              aria-label={inCart ? labels.added : labels.addToCart}
+              className="press flex shrink-0 items-center justify-center gap-1.5 border px-3 py-2.5 text-xs font-semibold transition-colors"
               style={{
                 borderRadius: "var(--sf-radius)",
                 borderColor: inCart ? "var(--sf-accent)" : "color-mix(in srgb, var(--sf-text) 18%, transparent)",
@@ -124,23 +134,24 @@ export function ProductCard({
               }}
             >
               {inCart ? (
-                <span className="inline-flex items-center gap-1">
+                <>
                   <Check className="h-3.5 w-3.5" /> {labels.added}
-                </span>
+                </>
               ) : (
-                labels.addToCart
+                <>
+                  <ShoppingBag className="h-3.5 w-3.5" /> {labels.add}
+                </>
               )}
             </button>
             <button
               onClick={orderNow}
-              className="press flex-1 px-3 py-2.5 text-xs font-semibold"
+              className="press flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-white shadow-sm"
               style={{
                 borderRadius: "var(--sf-radius)",
-                background: "var(--sf-accent)",
-                color: "var(--sf-accent-text)",
+                background: WHATSAPP_GREEN,
               }}
             >
-              {labels.orderWhatsApp}
+              <WhatsAppGlyph className="h-4 w-4" /> {labels.orderWhatsApp}
             </button>
           </div>
         ) : (
@@ -149,8 +160,8 @@ export function ProductCard({
             className="press flex w-full items-center justify-center gap-1.5 border px-3 py-2.5 text-xs font-semibold"
             style={{
               borderRadius: "var(--sf-radius)",
-              borderColor: "color-mix(in srgb, var(--sf-text) 18%, transparent)",
-              color: "var(--sf-muted)",
+              borderColor: `color-mix(in srgb, ${WHATSAPP_GREEN} 40%, transparent)`,
+              color: WHATSAPP_GREEN,
             }}
           >
             <BellRing className="h-3.5 w-3.5" /> {labels.notifyMe}

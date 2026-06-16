@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronDown, Globe, Instagram, Link as LinkIcon, Youtube } from "lucide-react";
+import { ChevronDown, Globe, Instagram, Link as LinkIcon, ShoppingBag, Youtube } from "lucide-react";
 import type { Product, Seller, StoreSection } from "@/lib/types";
 import type { Labels } from "@/lib/i18n";
 import { ProductCard } from "@/components/storefront/product-card";
@@ -97,9 +97,18 @@ export function SectionRenderer({
             </h2>
           )}
           {products.length === 0 ? (
-            <p className="py-8 text-center text-sm" style={{ color: "var(--sf-muted)" }}>
-              {labels.noProducts}
-            </p>
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <span
+                className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                style={{
+                  background: "color-mix(in srgb, var(--sf-accent) 12%, transparent)",
+                  color: "var(--sf-accent)",
+                }}
+              >
+                <ShoppingBag className="h-6 w-6" />
+              </span>
+              <p className="text-sm" style={{ color: "var(--sf-muted)" }}>{labels.noProducts}</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
               {products.map((p) => (

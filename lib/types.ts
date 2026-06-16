@@ -20,7 +20,6 @@ export type Seller = {
   store_name: string;
   bio: string | null;
   whatsapp_number: string;
-  upi_id: string | null;
   theme: StoreTheme | null;
   logo_url: string | null;
   wa_template: string;

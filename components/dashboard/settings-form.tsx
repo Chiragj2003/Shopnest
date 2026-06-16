@@ -30,7 +30,6 @@ export function SettingsForm({ seller }: { seller: Seller }) {
       storeName: seller.store_name,
       bio: seller.bio ?? "",
       whatsapp: seller.whatsapp_number.replace(/^91/, ""),
-      upiId: seller.upi_id ?? "",
       waTemplate: seller.wa_template,
     },
   });
@@ -136,11 +135,6 @@ export function SettingsForm({ seller }: { seller: Seller }) {
               />
             </div>
             {err.whatsapp && <p className="text-xs text-destructive">{err.whatsapp.message}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="s-upi">UPI ID</Label>
-            <Input id="s-upi" placeholder="yourname@okhdfcbank" {...form.register("upiId")} />
-            {err.upiId && <p className="text-xs text-destructive">{err.upiId.message}</p>}
           </div>
         </div>
 

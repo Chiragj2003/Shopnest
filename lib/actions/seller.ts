@@ -47,7 +47,6 @@ export async function completeOnboarding(values: OnboardingValues): Promise<Acti
     slug: parsed.data.slug,
     store_name: parsed.data.storeName,
     whatsapp_number: `91${parsed.data.whatsapp}`,
-    upi_id: parsed.data.upiId || null,
     theme,
   });
   if (error) return { ok: false, error: error.message };
@@ -75,7 +74,6 @@ export async function updateSettings(values: SettingsValues): Promise<ActionResu
       store_name: parsed.data.storeName,
       bio: parsed.data.bio || null,
       whatsapp_number: `91${parsed.data.whatsapp}`,
-      upi_id: parsed.data.upiId || null,
       wa_template: parsed.data.waTemplate,
     })
     .eq("id", userId);

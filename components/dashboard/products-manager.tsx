@@ -29,6 +29,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Dialog,
   DialogContent,
@@ -72,8 +73,10 @@ function SortableCard({
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground/40">
-            <Package className="h-8 w-8" />
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-secondary to-muted">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-background/60 text-muted-foreground/50">
+              <Package className="h-5 w-5" />
+            </span>
           </div>
         )}
         <button
@@ -198,20 +201,21 @@ export function ProductsManager({
       </div>
 
       {products.length === 0 ? (
-        <div className="card-soft flex flex-col items-center gap-3 px-6 py-16 text-center">
-          <p className="text-5xl">🛍️</p>
-          <h2 className="text-lg font-bold">Your shelf is empty</h2>
-          <p className="max-w-xs text-sm text-muted-foreground">
-            Add your first product or import one straight from an Instagram post.
-          </p>
-          <div className="mt-2 flex gap-2">
-            <Button variant="outline" onClick={() => setIgOpen(true)}>
-              <Instagram className="mr-1.5 h-4 w-4" /> Import from Instagram
-            </Button>
-            <Button onClick={() => openAdd()}>
-              <Plus className="mr-1.5 h-4 w-4" /> Add product
-            </Button>
-          </div>
+        <div className="card-soft">
+          <EmptyState
+            icon={Package}
+            title="Your shelf is empty"
+            description="Add your first product, or import one straight from an Instagram post."
+          >
+            <div className="mt-1 flex flex-wrap justify-center gap-2">
+              <Button variant="outline" onClick={() => setIgOpen(true)}>
+                <Instagram className="mr-1.5 h-4 w-4" /> Import from Instagram
+              </Button>
+              <Button onClick={() => openAdd()}>
+                <Plus className="mr-1.5 h-4 w-4" /> Add product
+              </Button>
+            </div>
+          </EmptyState>
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>

@@ -18,7 +18,7 @@ const body = Inter({
 export const metadata: Metadata = {
   title: "Shopnest — Your WhatsApp Storefront",
   description:
-    "Turn your Instagram shop into a beautiful one-page store. Buyers browse, tap, and order straight on WhatsApp — payments via UPI.",
+    "Turn your Instagram shop into a beautiful one-page store. Buyers browse, tap, and order straight on WhatsApp.",
   openGraph: {
     title: "Shopnest — Your WhatsApp Storefront",
     description:

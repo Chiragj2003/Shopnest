@@ -35,6 +35,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -91,7 +92,7 @@ const STARTER: LocalSection[] = [
       title: "FAQ",
       items: [
         { q: "Do you deliver?", a: "Yes — message us on WhatsApp for delivery details." },
-        { q: "How do I pay?", a: "UPI on delivery, or scan the QR on this page." },
+        { q: "How do I pay?", a: "Pay on delivery, or settle up with us over WhatsApp." },
       ],
     },
   },
@@ -523,15 +524,17 @@ export function StoreBuilder({
           </div>
 
           {sections.length === 0 ? (
-            <div className="card-soft flex flex-col items-center gap-3 p-6 text-center">
-              <p className="text-4xl">🎨</p>
-              <p className="text-sm font-semibold">Start with a ready-made layout</p>
-              <p className="text-xs text-muted-foreground">
-                Hero, products, about & FAQ — pre-arranged. You just fill in your words.
-              </p>
-              <Button size="sm" onClick={addStarter}>
-                <Sparkles className="mr-1.5 h-4 w-4" /> Use starter layout
-              </Button>
+            <div className="card-soft">
+              <EmptyState
+                icon={Layers}
+                title="Start with a ready-made layout"
+                description="Hero, products, about & FAQ — pre-arranged. You just fill in your words."
+                className="px-5 py-10"
+              >
+                <Button size="sm" onClick={addStarter}>
+                  <Sparkles className="mr-1.5 h-4 w-4" /> Use starter layout
+                </Button>
+              </EmptyState>
             </div>
           ) : (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>

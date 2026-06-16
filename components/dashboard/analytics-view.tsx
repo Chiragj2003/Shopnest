@@ -11,8 +11,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Eye, MessageCircle, Sparkles, TrendingUp } from "lucide-react";
+import { Eye, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { WhatsAppGlyph } from "@/components/ui/whatsapp";
+import { WHATSAPP_GREEN } from "@/lib/whatsapp";
 import { toast } from "sonner";
 
 export type DailyPoint = { date: string; key: string; views: number; clicks: number };
@@ -61,7 +64,8 @@ export function AnalyticsView({
         </div>
         <div className="card-soft card-hover p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <MessageCircle className="h-4 w-4" /> <span className="text-xs font-medium">WhatsApp clicks</span>
+            <WhatsAppGlyph className="h-4 w-4" style={{ color: WHATSAPP_GREEN }} />{" "}
+            <span className="text-xs font-medium">WhatsApp clicks</span>
           </div>
           <p className="mt-1 font-display text-3xl font-bold">{totals.clicks}</p>
         </div>
@@ -87,8 +91,8 @@ export function AnalyticsView({
                   <stop offset="100%" stopColor="hsl(17 70% 51%)" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="clicks" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#16a34a" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
+                  <stop offset="0%" stopColor={WHATSAPP_GREEN} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={WHATSAPP_GREEN} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(32 22% 90%)" vertical={false} />
@@ -98,7 +102,7 @@ export function AnalyticsView({
                 contentStyle={{ borderRadius: 12, border: "1px solid hsl(32 22% 88%)", fontSize: 12 }}
               />
               <Area type="monotone" dataKey="views" name="Views" stroke="hsl(17 70% 51%)" fill="url(#views)" strokeWidth={2} />
-              <Area type="monotone" dataKey="clicks" name="WhatsApp clicks" stroke="#16a34a" fill="url(#clicks)" strokeWidth={2} />
+              <Area type="monotone" dataKey="clicks" name="WhatsApp clicks" stroke={WHATSAPP_GREEN} fill="url(#clicks)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -108,12 +112,12 @@ export function AnalyticsView({
       <div className="card-soft p-5">
         <h2 className="mb-4 text-sm font-bold">Top products by WhatsApp clicks</h2>
         {perProduct.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-10 text-center">
-            <p className="text-4xl">📈</p>
-            <p className="text-sm text-muted-foreground">
-              No order clicks yet — share your store link to get the first ones!
-            </p>
-          </div>
+          <EmptyState
+            icon={TrendingUp}
+            title="No clicks yet"
+            description="Share your store link to land your first order clicks."
+            className="py-8"
+          />
         ) : (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">

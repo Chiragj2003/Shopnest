@@ -16,16 +16,10 @@ export const whatsappSchema = z
   .string()
   .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number");
 
-export const upiSchema = z
-  .string()
-  .regex(/^[\w.\-]{2,}@[a-zA-Z]{2,}$/, "Enter a valid UPI ID (e.g. name@upi)")
-  .or(z.literal(""));
-
 export const onboardingSchema = z.object({
   slug: slugSchema,
   storeName: z.string().min(2, "At least 2 characters").max(60),
   whatsapp: whatsappSchema,
-  upiId: upiSchema.optional().or(z.literal("")),
   themePreset: z.string().min(1, "Pick a theme"),
 });
 export type OnboardingValues = z.infer<typeof onboardingSchema>;
@@ -45,7 +39,6 @@ export const settingsSchema = z.object({
   storeName: z.string().min(2).max(60),
   bio: z.string().max(240).optional().or(z.literal("")),
   whatsapp: whatsappSchema,
-  upiId: upiSchema.optional().or(z.literal("")),
   waTemplate: z
     .string()
     .min(5)

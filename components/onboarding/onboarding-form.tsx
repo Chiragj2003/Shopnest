@@ -16,7 +16,7 @@ import { THEME_PRESETS } from "@/lib/themes";
 
 type SlugStatus = "idle" | "checking" | "available" | "taken" | "invalid";
 
-const STEPS = ["Link", "Name", "WhatsApp", "UPI", "Theme"] as const;
+const STEPS = ["Link", "Name", "WhatsApp", "Theme"] as const;
 
 export function OnboardingForm() {
   const router = useRouter();
@@ -31,7 +31,6 @@ export function OnboardingForm() {
       slug: "",
       storeName: "",
       whatsapp: "",
-      upiId: "",
       themePreset: THEME_PRESETS[0].preset,
     },
   });
@@ -54,7 +53,7 @@ export function OnboardingForm() {
     if (step === 0) return slugStatus === "available";
     if (step === 1) return form.watch("storeName").trim().length >= 2;
     if (step === 2) return /^[6-9]\d{9}$/.test(form.watch("whatsapp"));
-    return true; // UPI optional, theme has a default
+    return true; // theme has a default
   };
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -146,16 +145,6 @@ export function OnboardingForm() {
       )}
 
       {step === 3 && (
-        <div className="space-y-2 animate-fade-up">
-          <Label htmlFor="upiId">UPI ID <span className="text-muted-foreground">(optional)</span></Label>
-          <Input id="upiId" autoFocus placeholder="yourname@okhdfcbank" {...form.register("upiId")} />
-          <p className="text-xs text-muted-foreground">
-            Buyers see a scannable UPI QR for payment. You can add this later.
-          </p>
-        </div>
-      )}
-
-      {step === 4 && (
         <div className="space-y-3 animate-fade-up">
           <Label>Pick a look</Label>
           <div className="grid grid-cols-1 gap-2">
