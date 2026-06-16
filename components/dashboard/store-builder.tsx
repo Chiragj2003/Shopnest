@@ -21,8 +21,10 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowDown,
   ArrowUp,
+  Check,
   ChevronDown,
   Copy,
+  ExternalLink,
   Eye,
   GripVertical,
   ImagePlus,
@@ -55,14 +57,14 @@ import type {
 type LocalSection = { localId: string; type: SectionType; content: SectionContent };
 type BuilderTab = "edit" | "preview" | "style";
 
-const SECTION_LIBRARY: Array<{ type: SectionType; label: string; emoji: string }> = [
-  { type: "hero", label: "Hero", emoji: "👋" },
-  { type: "text", label: "Text", emoji: "✍️" },
-  { type: "image", label: "Image", emoji: "🖼️" },
-  { type: "products", label: "Products", emoji: "🛍️" },
-  { type: "testimonials", label: "Testimonials", emoji: "💬" },
-  { type: "faq", label: "FAQ", emoji: "❓" },
-  { type: "socials", label: "Socials", emoji: "🔗" },
+const SECTION_LIBRARY: Array<{ type: SectionType; label: string; emoji: string; desc: string }> = [
+  { type: "hero", label: "Hero", emoji: "👋", desc: "Logo, name & tagline" },
+  { type: "text", label: "Text", emoji: "✍️", desc: "A paragraph of copy" },
+  { type: "image", label: "Image", emoji: "🖼️", desc: "A full-width photo" },
+  { type: "products", label: "Products", emoji: "🛍️", desc: "Your product grid" },
+  { type: "testimonials", label: "Testimonials", emoji: "💬", desc: "Customer quotes" },
+  { type: "faq", label: "FAQ", emoji: "❓", desc: "Common questions" },
+  { type: "socials", label: "Socials", emoji: "🔗", desc: "Links to your profiles" },
 ];
 
 const DEFAULT_CONTENT: Record<SectionType, SectionContent> = {
@@ -306,21 +308,21 @@ function SortableSection({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`card-soft overflow-hidden ${isDragging ? "z-10 opacity-80 shadow-2xl" : ""} ${
-        expanded ? "ring-2 ring-primary/30" : ""
+      className={`group card-soft overflow-hidden ${isDragging ? "z-10 rotate-[0.4deg] opacity-90 shadow-2xl" : ""} ${
+        expanded ? "ring-2 ring-primary/40" : ""
       }`}
     >
-      <div className="flex items-center gap-1.5 p-2.5">
+      <div className="flex items-center gap-1 p-2">
         <button
           {...attributes}
           {...listeners}
-          aria-label="Drag"
-          className="hidden cursor-grab rounded-md p-1 text-muted-foreground hover:bg-secondary active:cursor-grabbing sm:block"
+          aria-label="Drag to reorder"
+          className="hidden cursor-grab rounded-md p-1.5 text-muted-foreground/50 hover:bg-secondary hover:text-foreground active:cursor-grabbing sm:block"
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <button onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-base">
+        <button onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-1 py-1 text-left">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-base">
             {meta.emoji}
           </span>
           <span className="min-w-0">
@@ -331,12 +333,12 @@ function SortableSection({
             className={`ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
           />
         </button>
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-0.5 transition-opacity lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100">
           <button
             onClick={() => onMove(-1)}
             disabled={index === 0}
             aria-label="Move up"
-            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary disabled:opacity-25"
+            className="press rounded-md p-1.5 text-muted-foreground hover:bg-secondary disabled:opacity-25"
           >
             <ArrowUp className="h-3.5 w-3.5" />
           </button>
@@ -344,21 +346,21 @@ function SortableSection({
             onClick={() => onMove(1)}
             disabled={index === count - 1}
             aria-label="Move down"
-            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary disabled:opacity-25"
+            className="press rounded-md p-1.5 text-muted-foreground hover:bg-secondary disabled:opacity-25"
           >
             <ArrowDown className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onDuplicate}
             aria-label="Duplicate section"
-            className="press rounded-md p-1 text-muted-foreground hover:bg-secondary"
+            className="press rounded-md p-1.5 text-muted-foreground hover:bg-secondary"
           >
             <Copy className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={onDelete}
             aria-label="Delete section"
-            className="press rounded-md p-1 text-destructive hover:bg-destructive/10"
+            className="press rounded-md p-1.5 text-destructive hover:bg-destructive/10"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -390,6 +392,7 @@ export function StoreBuilder({
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [tab, setTab] = useState<BuilderTab>("edit");
+  const [addOpen, setAddOpen] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -477,17 +480,32 @@ export function StoreBuilder({
 
   return (
     <div className="animate-fade-up">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Store Builder</h1>
+          <h1 className="text-2xl font-bold">Store builder</h1>
           <p className="hidden text-sm text-muted-foreground sm:block">
-            Drag sections, tune the look — the preview is live.
+            Build your page on the left, style it on the right — the preview is live.
           </p>
         </div>
-        <Button onClick={save} disabled={saving || !dirty} className="hidden lg:inline-flex">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          {dirty ? "Publish changes" : "Published"}
-        </Button>
+        <div className="hidden items-center gap-2 lg:flex">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+              dirty ? "bg-amber-500/10 text-amber-700" : "bg-emerald-500/10 text-emerald-700"
+            }`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${dirty ? "bg-amber-500" : "bg-emerald-500"}`} />
+            {dirty ? "Unsaved changes" : "All changes published"}
+          </span>
+          <Button variant="outline" asChild>
+            <a href={`/${seller.slug}`} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="mr-2 h-4 w-4" /> View store
+            </a>
+          </Button>
+          <Button onClick={save} disabled={saving || !dirty}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {dirty ? "Publish changes" : "Published"}
+          </Button>
+        </div>
       </div>
 
       {/* mobile tab switcher */}
@@ -505,22 +523,38 @@ export function StoreBuilder({
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)_280px]">
+      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)_300px]">
         {/* left: sections */}
-        <div className={`${tab === "edit" ? "block" : "hidden"} space-y-4 lg:block`}>
-          <div className="card-soft p-3">
-            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Add section</p>
-            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-2">
-              {SECTION_LIBRARY.map((s) => (
-                <button
-                  key={s.type}
-                  onClick={() => addSection(s.type)}
-                  className="press flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-[11px] font-medium hover:border-primary hover:bg-primary/5 hover:text-primary lg:flex-row lg:gap-1.5 lg:py-1.5 lg:text-xs"
-                >
-                  <span className="text-base lg:text-sm">{s.emoji}</span> {s.label}
-                </button>
-              ))}
-            </div>
+        <div className={`${tab === "edit" ? "block" : "hidden"} space-y-3 lg:block`}>
+          <div className="relative">
+            <Button className="w-full" onClick={() => setAddOpen((o) => !o)}>
+              <Plus className="mr-1.5 h-4 w-4" /> Add a section
+            </Button>
+            {addOpen && (
+              <>
+                <div className="fixed inset-0 z-30" aria-hidden onClick={() => setAddOpen(false)} />
+                <div className="absolute left-0 right-0 top-full z-40 mt-2 space-y-0.5 rounded-2xl border bg-popover p-1.5 shadow-xl">
+                  {SECTION_LIBRARY.map((s) => (
+                    <button
+                      key={s.type}
+                      onClick={() => {
+                        addSection(s.type);
+                        setAddOpen(false);
+                      }}
+                      className="press flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left hover:bg-secondary"
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-base">
+                        {s.emoji}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold leading-tight">{s.label}</span>
+                        <span className="block truncate text-xs text-muted-foreground">{s.desc}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {sections.length === 0 ? (
@@ -569,8 +603,9 @@ export function StoreBuilder({
         {/* center: live phone preview */}
         <div className={`${tab === "preview" ? "block" : "hidden"} lg:block`}>
           <div className="mx-auto w-[375px] max-w-full lg:sticky lg:top-6">
-            <div className="overflow-hidden rounded-[2.4rem] border-[10px] border-foreground/90 shadow-2xl">
-              <div className="relative h-[600px] overflow-y-auto scroll-thin sm:h-[640px]">
+            <div className="relative rounded-[2.6rem] border-[11px] border-foreground/90 bg-foreground/90 shadow-[0_30px_70px_-25px_rgba(32,24,16,0.5)]">
+              <div className="absolute left-1/2 top-0 z-10 h-5 w-28 -translate-x-1/2 rounded-b-2xl bg-foreground/90" />
+              <div className="relative h-[600px] overflow-y-auto scroll-thin rounded-[1.7rem] sm:h-[640px]">
                 <StorefrontView
                   seller={previewSeller}
                   sections={previewSections}
@@ -579,83 +614,112 @@ export function StoreBuilder({
                 />
               </div>
             </div>
-            <p className="mt-2 text-center text-xs text-muted-foreground">Live preview · how buyers see it</p>
+            <div className="mt-3 flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              Live preview · how buyers see it
+            </div>
           </div>
         </div>
 
         {/* right: style controls */}
-        <div className={`${tab === "style" ? "block" : "hidden"} space-y-4 lg:block`}>
-          <div className="card-soft space-y-4 p-4">
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Theme preset</p>
-              <div className="grid grid-cols-5 gap-1.5">
-                {THEME_PRESETS.map((t) => (
-                  <button
-                    key={t.preset}
-                    title={t.preset}
-                    onClick={() => {
-                      setTheme(t);
+        <div className={`${tab === "style" ? "block" : "hidden"} lg:block`}>
+          <div className="card-soft divide-y overflow-hidden lg:sticky lg:top-6">
+            {/* theme presets */}
+            <div className="space-y-2.5 p-4">
+              <p className="text-sm font-bold">Theme</p>
+              <div className="grid grid-cols-2 gap-2">
+                {THEME_PRESETS.map((t) => {
+                  const active = theme.preset === t.preset;
+                  return (
+                    <button
+                      key={t.preset}
+                      onClick={() => {
+                        setTheme(t);
+                        touch();
+                      }}
+                      className={`press overflow-hidden rounded-xl border text-left transition-colors ${
+                        active ? "border-primary ring-2 ring-primary/20" : "hover:border-foreground/20"
+                      }`}
+                    >
+                      <span
+                        className="block h-10 w-full"
+                        style={{ background: t.background === "gradient" ? t.bgGradient : t.bg }}
+                      />
+                      <span className="flex items-center justify-between gap-1 px-2 py-1.5">
+                        <span className="truncate text-[11px] font-medium">{t.preset}</span>
+                        {active && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* colors */}
+            <div className="space-y-3 p-4">
+              <p className="text-sm font-bold">Colors</p>
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-xs">Accent</Label>
+                <label className="press inline-flex cursor-pointer items-center gap-2 rounded-lg border px-2 py-1">
+                  <span className="h-5 w-5 rounded-md border" style={{ background: theme.accent }} />
+                  <span className="text-xs text-muted-foreground">{theme.accent.toUpperCase()}</span>
+                  <input
+                    type="color"
+                    value={theme.accent}
+                    onChange={(e) => {
+                      setTheme({ ...theme, preset: "Custom", accent: e.target.value });
                       touch();
                     }}
-                    className={`press aspect-square rounded-lg border-2 ${
-                      theme.preset === t.preset ? "border-primary ring-2 ring-primary/20" : "border-transparent"
-                    }`}
-                    style={{ background: t.background === "gradient" ? t.bgGradient : t.bg }}
+                    className="sr-only"
                   />
-                ))}
+                </label>
               </div>
-              <p className="mt-1.5 text-xs text-muted-foreground">{theme.preset}</p>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs">Background</Label>
+                <div className="flex gap-1.5">
+                  {(["solid", "gradient"] as const).map((bg) => (
+                    <button
+                      key={bg}
+                      onClick={() => {
+                        setTheme({ ...theme, background: bg });
+                        touch();
+                      }}
+                      className={`press flex-1 rounded-lg border px-2 py-2 text-xs font-medium capitalize transition-colors ${
+                        theme.background === bg ? "border-primary bg-primary/5 text-primary" : "hover:bg-secondary"
+                      }`}
+                    >
+                      {bg}
+                    </button>
+                  ))}
+                </div>
+                {theme.background === "solid" && (
+                  <label className="press flex cursor-pointer items-center justify-between gap-2 rounded-lg border px-2 py-1.5">
+                    <span className="text-xs text-muted-foreground">Page color</span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{theme.bg.toUpperCase()}</span>
+                      <span className="h-5 w-5 rounded-md border" style={{ background: theme.bg }} />
+                    </span>
+                    <input
+                      type="color"
+                      value={theme.bg}
+                      onChange={(e) => {
+                        setTheme({ ...theme, preset: "Custom", bg: e.target.value });
+                        touch();
+                      }}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs">Accent color</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={theme.accent}
-                  onChange={(e) => {
-                    setTheme({ ...theme, preset: "Custom", accent: e.target.value });
-                    touch();
-                  }}
-                  className="h-9 w-14 cursor-pointer rounded-lg border"
-                />
-                <span className="text-xs text-muted-foreground">{theme.accent}</span>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs">Background</Label>
-              <div className="flex gap-1.5">
-                {(["solid", "gradient"] as const).map((bg) => (
-                  <button
-                    key={bg}
-                    onClick={() => {
-                      setTheme({ ...theme, background: bg });
-                      touch();
-                    }}
-                    className={`press flex-1 rounded-lg border px-2 py-2 text-xs font-medium capitalize ${
-                      theme.background === bg ? "border-primary bg-primary/5 text-primary" : ""
-                    }`}
-                  >
-                    {bg}
-                  </button>
-                ))}
-              </div>
-              {theme.background === "solid" && (
-                <input
-                  type="color"
-                  value={theme.bg}
-                  onChange={(e) => {
-                    setTheme({ ...theme, preset: "Custom", bg: e.target.value });
-                    touch();
-                  }}
-                  className="h-9 w-full cursor-pointer rounded-lg border"
-                />
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs">Font pair</Label>
+            {/* typography */}
+            <div className="space-y-1.5 p-4">
+              <p className="text-sm font-bold">Typography</p>
               <select
                 value={theme.fontPair}
                 onChange={(e) => {
@@ -672,8 +736,9 @@ export function StoreBuilder({
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs">Button shape</Label>
+            {/* buttons */}
+            <div className="space-y-1.5 p-4">
+              <p className="text-sm font-bold">Buttons</p>
               <div className="flex gap-1.5">
                 {(["rounded", "square", "pill"] as const).map((shape) => (
                   <button
@@ -682,8 +747,8 @@ export function StoreBuilder({
                       setTheme({ ...theme, buttonShape: shape });
                       touch();
                     }}
-                    className={`press flex-1 border px-2 py-2 text-xs font-medium capitalize ${
-                      theme.buttonShape === shape ? "border-primary bg-primary/5 text-primary" : ""
+                    className={`press flex-1 border px-2 py-2 text-xs font-medium capitalize transition-colors ${
+                      theme.buttonShape === shape ? "border-primary bg-primary/5 text-primary" : "hover:bg-secondary"
                     }`}
                     style={{ borderRadius: buttonRadius(shape) }}
                   >
