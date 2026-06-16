@@ -95,6 +95,34 @@
   .blob {
     @apply pointer-events-none absolute rounded-full blur-3xl;
   }
+  /* frosted glass — navigation & floating surfaces */
+  .glass {
+    background: hsl(36 33% 97% / 0.72);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+  /* layered, warm-tinted elevation for hero device + premium cards */
+  .shadow-premium {
+    box-shadow:
+      0 1px 2px rgb(32 24 16 / 0.05),
+      0 12px 32px -12px rgb(32 24 16 / 0.18),
+      0 44px 80px -36px rgb(217 91 42 / 0.18);
+  }
+  .glow-primary {
+    box-shadow: 0 12px 34px -10px hsl(17 70% 51% / 0.5);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* faint blueprint grid that fades out — hero backdrop */
+  .hero-grid {
+    background-image:
+      linear-gradient(hsl(32 22% 84% / 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(32 22% 84% / 0.6) 1px, transparent 1px);
+    background-size: 38px 38px;
+    -webkit-mask-image: radial-gradient(520px 340px at 50% 0%, #000, transparent 78%);
+    mask-image: radial-gradient(520px 340px at 50% 0%, #000, transparent 78%);
+  }
 }
 
 /* Thin scrollbars for builder panes */
@@ -109,7 +137,16 @@
 .float-slow {
   animation: float-y 6s ease-in-out infinite;
 }
+/* upright float (no tilt) for floating hero accent cards */
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.float-card { animation: float-soft 5.5s ease-in-out infinite; }
+.float-card-slow { animation: float-soft 7s ease-in-out infinite 0.4s; }
 @media (prefers-reduced-motion: reduce) {
-  .float-slow { animation: none; }
+  .float-slow,
+  .float-card,
+  .float-card-slow { animation: none; }
   html { scroll-behavior: auto; }
 }
